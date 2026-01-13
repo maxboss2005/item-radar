@@ -3,175 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost & Found Item Tracker</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css">
+    <title>TraceIt – Real-Time Item Finder</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-map-marker-alt"></i> Lost & Found Item Tracker</h1>
-            <p class="tagline">Never lose your items again - save them with photos and find them on a map</p>
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="page active">
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="radar-icon">
+                    <div class="radar-pulse"></div>
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+                <h1>Trace<span>It</span></h1>
+                <p class="subtitle">Real-Time Item Finder</p>
+            </div>
+            <div class="user-status">
+                <div class="status-indicator active" id="connectionStatus">
+                    <span>●</span> Connected
+                </div>
+            </div>
         </header>
-        
-        <div class="app-layout">
-            <!-- Saved Items Sidebar -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h2><i class="fas fa-box-open"></i> My Saved Items</h2>
-                    <div class="item-count">Items: <span id="itemCount">0</span></div>
+
+        <main class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-cube"></i>
+                    <h3 id="itemCount">0</h3>
+                    <p>Items Tracked</p>
                 </div>
-                
-                <div class="search-container">
-                    <input type="text" id="searchItems" placeholder="Search items by name...">
-                    <i class="fas fa-search search-icon"></i>
+                <div class="stat-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3 id="locationStatus">Ready</h3>
+                    <p>Location Status</p>
                 </div>
-                
-                <!-- Add Item Form -->
-                <div class="add-item-form">
-                    <h3><i class="fas fa-plus-circle"></i> Add New Item</h3>
-                    
-                    <div class="form-group">
-                        <label for="itemName"><i class="fas fa-tag"></i> Item Name</label>
-                        <input type="text" id="itemName" placeholder="e.g., Blue Backpack, Car Keys">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-camera"></i> Item Photo</label>
-                        <div class="photo-options">
-                            <button type="button" id="takePhotoBtn" class="photo-btn">
-                                <i class="fas fa-camera"></i> Take Photo
-                            </button>
-                            <button type="button" id="uploadPhotoBtn" class="photo-btn">
-                                <i class="fas fa-upload"></i> Upload Photo
-                            </button>
-                        </div>
-                        <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display: none;">
-                        <div class="photo-preview-container">
-                            <div id="photoPreview">
-                                <i class="fas fa-image"></i>
-                                <p>No photo selected</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-map-pin"></i> Save Current Location</label>
-                        <div class="location-info">
-                            <p id="currentLocationInfo">Getting your location...</p>
-                            <button type="button" id="getLocationBtn" class="location-btn">
-                                <i class="fas fa-location-crosshairs"></i> Update Location
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <button type="button" id="saveItemBtn" class="save-btn">
-                        <i class="fas fa-save"></i> Save Item
-                    </button>
-                    
-                    <div class="form-notice">
-                        <i class="fas fa-info-circle"></i> Item details are saved locally in your browser
-                    </div>
+                <div class="stat-card">
+                    <i class="fas fa-bluetooth-b"></i>
+                    <h3 id="bluetoothStatus">Sim</h3>
+                    <p>Bluetooth Mode</p>
                 </div>
-                
-                <!-- Saved Items List -->
-                <div class="saved-items-container">
-                    <h3><i class="fas fa-boxes"></i> Saved Items</h3>
-                    <div id="savedItemsList" class="saved-items-list">
-                        <!-- Items will be loaded here -->
-                        <div class="empty-state">
-                            <i class="fas fa-box-open"></i>
-                            <p>No items saved yet</p>
-                            <p class="subtext">Add your first item using the form above</p>
-                        </div>
-                    </div>
+                <div class="stat-card">
+                    <i class="fas fa-history"></i>
+                    <h3 id="lastUpdate">Now</h3>
+                    <p>Last Update</p>
                 </div>
-            </aside>
-            
-            <!-- Map Section -->
-            <main class="map-section">
-                <div class="map-header">
-                    <h2><i class="fas fa-map"></i> Item Locator Map</h2>
-                    <div class="map-controls">
-                        <div class="distance-display">
-                            <i class="fas fa-ruler-combined"></i>
-                            Distance: <span id="distanceDisplay">--</span>
-                        </div>
-                        <button id="centerMapBtn" class="control-btn">
-                            <i class="fas fa-location-crosshairs"></i> Center on Me
-                        </button>
-                    </div>
+            </div>
+
+            <div class="action-grid">
+                <button class="action-btn primary" onclick="showPage('saveItem')">
+                    <i class="fas fa-plus"></i>
+                    <span>Save New Item</span>
+                </button>
+                <button class="action-btn secondary" onclick="showPage('trackedItems')">
+                    <i class="fas fa-boxes"></i>
+                    <span>My Tracked Items</span>
+                </button>
+                <button class="action-btn accent" onclick="showPage('liveFinder')">
+                    <i class="fas fa-satellite"></i>
+                    <span>Live Finder</span>
+                </button>
+                <button class="action-btn" onclick="startCameraScan()">
+                    <i class="fas fa-camera"></i>
+                    <span>Camera Scan</span>
+                </button>
+            </div>
+
+            <div class="recent-activity">
+                <h2>Recent Activity</h2>
+                <div id="activityLog" class="activity-log">
+                    <!-- Activity items will be populated here -->
                 </div>
-                
-                <div id="map"></div>
-                
-                <div class="map-legend">
-                    <div class="legend-item">
-                        <div class="legend-color user-legend"></div>
-                        <span>Your Location</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color item-legend"></div>
-                        <span>Item Location</span>
-                    </div>
-                </div>
-                
-                <div class="instructions">
-                    <h3><i class="fas fa-info-circle"></i> How to Use</h3>
-                    <ol>
-                        <li>Take or upload a photo of your item</li>
-                        <li>Give it a name and save your current location</li>
-                        <li>Click on any saved item to see its location on the map</li>
-                        <li>The map updates in real-time as you move</li>
-                        <li>Distance between you and the item is shown above the map</li>
-                    </ol>
-                </div>
-            </main>
+            </div>
+        </main>
+
+        <div class="hardware-status">
+            <div class="sensor-status">
+                <i class="fas fa-location-dot"></i>
+                <span>GPS: <span id="gpsStatus">Active</span></span>
+            </div>
+            <div class="sensor-status">
+                <i class="fas fa-compass"></i>
+                <span>Compass: <span id="compassStatus">Active</span></span>
+            </div>
+            <div class="sensor-status">
+                <i class="fas fa-wifi"></i>
+                <span>Bluetooth: <span id="bluetoothSignal">Simulated</span></span>
+            </div>
         </div>
-        
-        <footer>
-            <p>Lost & Found Item Tracker &copy; <span id="currentYear"></span> | Items are stored locally in your browser</p>
-            <p class="footer-note"><i class="fas fa-map-marked-alt"></i> Uses Leaflet.js with OpenStreetMap | Geolocation API</p>
-        </footer>
     </div>
-    
-    <!-- Camera Modal -->
+
+    <!-- Save Item Page -->
+    <div id="saveItem" class="page">
+        <header class="page-header">
+            <button class="back-btn" onclick="showPage('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Save New Item</h2>
+        </header>
+
+        <main class="form-container">
+            <div class="form-group">
+                <label for="itemName">
+                    <i class="fas fa-tag"></i> Item Name
+                </label>
+                <input type="text" id="itemName" placeholder="e.g., House Keys, Wallet, Backpack">
+            </div>
+
+            <div class="form-group">
+                <label for="itemCategory">
+                    <i class="fas fa-filter"></i> Category
+                </label>
+                <select id="itemCategory">
+                    <option value="keys">Keys</option>
+                    <option value="wallet">Wallet</option>
+                    <option value="phone">Phone</option>
+                    <option value="bag">Bag</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-camera"></i> Item Photo
+                </label>
+                <div class="photo-options">
+                    <button class="photo-btn" onclick="capturePhoto()">
+                        <i class="fas fa-camera"></i> Take Photo
+                    </button>
+                    <button class="photo-btn secondary" onclick="uploadPhoto()">
+                        <i class="fas fa-upload"></i> Upload
+                    </button>
+                </div>
+                <div class="photo-preview" id="photoPreview">
+                    <i class="fas fa-image"></i>
+                    <p>No photo selected</p>
+                </div>
+                <input type="file" id="photoUpload" accept="image/*" hidden>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-map-marker-alt"></i> Current Location
+                </label>
+                <div class="location-info">
+                    <div id="currentLocation">Acquiring location...</div>
+                    <button class="small-btn" onclick="updateLocation()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="coordinate-display">
+                    <div>Lat: <span id="currentLat">0.0000</span></div>
+                    <div>Lng: <span id="currentLng">0.0000</span></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="attachMethod">
+                    <i class="fas fa-link"></i> Attach Method
+                </label>
+                <select id="attachMethod">
+                    <option value="bluetooth">Bluetooth Tag</option>
+                    <option value="proximity">Phone Proximity</option>
+                    <option value="camera">Camera Recognition</option>
+                    <option value="gps">GPS Only</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn cancel" onclick="showPage('dashboard')">Cancel</button>
+                <button class="btn primary" onclick="saveItem()">Save Item</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Tracked Items Page -->
+    <div id="trackedItems" class="page">
+        <header class="page-header">
+            <button class="back-btn" onclick="showPage('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>My Tracked Items</h2>
+            <button class="refresh-btn" onclick="loadTrackedItems()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </header>
+
+        <main class="items-grid" id="itemsGrid">
+            <!-- Items will be populated here -->
+        </main>
+    </div>
+
+    <!-- Live Finder Page -->
+    <div id="liveFinder" class="page">
+        <header class="page-header">
+            <button class="back-btn" onclick="stopLiveFinder(); showPage('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>Live Finder</h2>
+            <div class="finder-controls">
+                <button class="icon-btn" onclick="toggleSound()" id="soundToggle">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button class="icon-btn" onclick="toggleVibration()" id="vibrationToggle">
+                    <i class="fas fa-vibrate"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="finder-container">
+            <div class="item-selector">
+                <select id="finderItemSelect" onchange="selectFinderItem()">
+                    <option value="">Select an item to find...</option>
+                </select>
+            </div>
+
+            <div class="radar-container" id="radarContainer">
+                <div class="radar">
+                    <div class="radar-sweep"></div>
+                    <div class="radar-center">
+                        <i class="fas fa-crosshairs"></i>
+                    </div>
+                    <div class="target-marker" id="targetMarker"></div>
+                    <div class="distance-ring" id="distanceRing"></div>
+                </div>
+                <div class="radar-info">
+                    <div class="signal-strength">
+                        <div class="signal-bars">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <span>Signal Strength</span>
+                    </div>
+                    <div class="direction-arrow" id="directionArrow">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="finder-stats">
+                <div class="stat">
+                    <i class="fas fa-ruler"></i>
+                    <div>
+                        <div class="label">Distance</div>
+                        <div class="value" id="distanceValue">-- m</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-compass"></i>
+                    <div>
+                        <div class="label">Direction</div>
+                        <div class="value" id="directionValue">--°</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-bluetooth-b"></i>
+                    <div>
+                        <div class="label">RSSI</div>
+                        <div class="value" id="rssiValue">-- dBm</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <div class="label">Last Seen</div>
+                        <div class="value" id="lastSeenValue">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="proximity-feedback" id="proximityFeedback">
+                <i class="fas fa-info-circle"></i>
+                <span>Select an item to begin tracking</span>
+            </div>
+
+            <div class="finder-actions">
+                <button class="btn accent" onclick="startLiveTracking()" id="startTrackingBtn">
+                    <i class="fas fa-play"></i> Start Tracking
+                </button>
+                <button class="btn secondary" onclick="stopLiveTracking()" id="stopTrackingBtn" disabled>
+                    <i class="fas fa-stop"></i> Stop Tracking
+                </button>
+                <button class="btn" onclick="activateCameraScan()">
+                    <i class="fas fa-camera"></i> Camera Scan
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Camera Scan Modal -->
     <div id="cameraModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-camera"></i> Take Photo</h3>
-                <button class="close-modal">&times;</button>
+                <h3>Camera Scan Mode</h3>
+                <button class="close-btn" onclick="closeCameraModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="camera-container">
                     <video id="cameraFeed" autoplay playsinline></video>
-                    <canvas id="photoCanvas" style="display: none;"></canvas>
-                    <div class="camera-controls">
-                        <button id="captureBtn" class="camera-btn">
-                            <i class="fas fa-camera"></i> Capture Photo
-                        </button>
-                        <button id="switchCameraBtn" class="camera-btn">
-                            <i class="fas fa-sync-alt"></i> Switch Camera
-                        </button>
+                    <canvas id="cameraCanvas" hidden></canvas>
+                    <div class="scan-overlay">
+                        <div class="scan-box"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                </div>
+                <div class="scan-results">
+                    <h4>Detection Results</h4>
+                    <div id="detectionResults">
+                        <p>Scanning for items...</p>
+                    </div>
+                    <div class="match-indicator">
+                        <div class="match-meter">
+                            <div class="match-fill" id="matchFill"></div>
+                        </div>
+                        <span>Match Confidence</span>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="toggleCamera()" id="cameraToggle">
+                    <i class="fas fa-play"></i> Start Camera
+                </button>
+                <button class="btn secondary" onclick="captureScan()">
+                    <i class="fas fa-camera"></i> Capture
+                </button>
+                <button class="btn" onclick="closeCameraModal()">Close</button>
+            </div>
         </div>
     </div>
-    
-    <!-- Notification Toast -->
-    <div id="notificationToast" class="toast">
-        <div class="toast-content">
-            <i class="fas fa-check-circle"></i>
-            <span id="toastMessage">Item saved successfully!</span>
-        </div>
-    </div>
-    
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Audio element for proximity beeping -->
+    <audio id="proximityBeep" src="https://assets.mixkit.co/active_storage/sfx/286/286-preview.mp3" preload="auto"></audio>
+
     <script src="script.js"></script>
 </body>
 </html>
